@@ -40,7 +40,7 @@ export function ShowOnMap({ navigation, route }) {
         
         console.log(search)
         console.log(key)
-        fetch(`https://www.mapquestapi.com/geocoding/v1/address?key=QHllj8TueiNQZxPxioSLPTfbEATpyXpx&street=${number}+${key}`)
+        fetch(`https://www.mapquestapi.com/geocoding/v1/address?key=YOURKEY&street=${number}+${key}`)
             .then(response => response.json())
             .then(responseJson => setRegion({
                 latitude: responseJson.results[0].locations[0].displayLatLng.lat,
@@ -105,7 +105,7 @@ export function ShowSavedOnMap({ navigation, route }) {
         let key = item.name.replace(/\s+/g, '');
         key = key.replace(/[0-9]/g, '')
         let number = item.name.replace(/[^0-9]/g, '');
-        fetch(`https://www.mapquestapi.com/geocoding/v1/address?key=QHllj8TueiNQZxPxioSLPTfbEATpyXpx&location=${number}+${key}`)
+        fetch(`https://www.mapquestapi.com/geocoding/v1/address?key=YOURKEY&location=${number}+${key}`)
             .then(response => response.json())
             .then(responseJson => setRegion({
                 latitude: responseJson.results[0].locations[0].displayLatLng.lat,
