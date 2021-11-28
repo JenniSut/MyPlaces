@@ -17,12 +17,12 @@ export function ShowOnMap({ navigation, route }) {
 
     let { input } = route.params
 
+    const [search, setSearch] = useState('');
     const [region, setRegion] = useState({
         latitude: 0,
         longitude: 0,
         latitudeDelta: 0.0422,
         longitudeDelta: 0.0221,
-        city: '',
         name: '',
     });
 
@@ -37,7 +37,8 @@ export function ShowOnMap({ navigation, route }) {
         let key = input.replace(/\s+/g, '');
         key = key.replace(/[0-9]/g, '')
         let number = input.replace(/[^0-9]/g, '');
-        console.log(number)
+        
+        console.log(search)
         console.log(key)
         fetch(`https://www.mapquestapi.com/geocoding/v1/address?key=QHllj8TueiNQZxPxioSLPTfbEATpyXpx&street=${number}+${key}`)
             .then(response => response.json())
@@ -58,8 +59,8 @@ export function ShowOnMap({ navigation, route }) {
     const saveItem = () => {
 
         db.transaction(tx => {
-            tx.executeSql('insert into placeslist (latitude, longitude, latitudeDelta, longitudeDelta, city, name ) values (?, ?, ?, ?, ?, ?);', [region.latitude, region.longitude, region.latitudeDelta, region.longitudeDelta, region.city, region.name]);
-        }, null, () => navigation.navigate('List')
+            tx.executeSql('insert into placeslist (latitude, longitude, latitudeDelta, longitudeDelta, name ) values (?, ?, ?, ?, ?);', [region.latitude, region.longitude, region.latitudeDelta, region.longitudeDelta, region.name]);
+        }, console.log(region), () => navigation.navigate('List')
         );
 
     }
@@ -90,6 +91,7 @@ export function ShowSavedOnMap({ navigation, route }) {
         longitude: 0,
         latitudeDelta: 0.0422,
         longitudeDelta: 0.0221,
+        search: '',
     });
 
     const [coordinate, setCoordinate] = useState({ latitude: region.latitude, longitude: region.longitude })
@@ -99,8 +101,11 @@ export function ShowSavedOnMap({ navigation, route }) {
 
     const getMap = () => {
 
+
         let key = item.name.replace(/\s+/g, '');
-        fetch(`https://www.mapquestapi.com/geocoding/v1/address?key=QHllj8TueiNQZxPxioSLPTfbEATpyXpx&location=${key}`)
+        key = key.replace(/[0-9]/g, '')
+        let number = item.name.replace(/[^0-9]/g, '');
+        fetch(`https://www.mapquestapi.com/geocoding/v1/address?key=QHllj8TueiNQZxPxioSLPTfbEATpyXpx&location=${number}+${key}`)
             .then(response => response.json())
             .then(responseJson => setRegion({
                 latitude: responseJson.results[0].locations[0].displayLatLng.lat,
@@ -144,7 +149,7 @@ export default function PlacesList({ navigation }) {
     //creates the db
     useEffect(() => {
         db.transaction(tx => {
-            tx.executeSql('create table if not exists placeslist (id integer primary key not null, latitude real, longitude real, latitudeDelta real, longitudeDelta real, name text );');
+            tx.executeSql('create table if not exists placeslist (id integer primary key not null, latitude real, longitude real, latitudeDelta real, longitudeDelta real, name text);');
         });
         updateList();
         console.log(data)
